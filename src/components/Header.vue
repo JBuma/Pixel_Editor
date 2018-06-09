@@ -20,12 +20,12 @@
 <style lang="scss">
 	@import '../static/globals.scss';
 	#header {
-		width: 100%; // min-height: 50px;
-		max-height: 150px; // padding: 0 $spacing--huge;
+		width: 100%;
+		max-height: 150px;
 		background-color: $background--dark;
 		color: $text--dark;
 		display: flex;
-		flex-flow: row nowrap; // justify-content: space-around;
+		flex-flow: row nowrap;
 	}
 
 	.item {

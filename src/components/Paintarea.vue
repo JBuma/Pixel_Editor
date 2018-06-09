@@ -4,8 +4,8 @@
 			<canvas ref="canvas" id="canvas" :width="gridDimensions.x" :height="gridDimensions.y" :style="dimensionsToStyle">
 			</canvas>
 			<!-- TODO: Make canvas size not hardcoded -->
-			<canvas ref="canvas-grid" id="canvas-grid" :width="canvasDimensions.x" :height="canvasDimensions.y" @mousedown="onMouseDown($event)" @mousemove="onMouseMove($event)"
-			    @mouseup="onMouseUp($event)" @mouseleave="onMouseUp($event)" :style="dimensionsToStyle"></canvas>
+			<canvas ref="canvas-grid" id="canvas-grid" :width="canvasDimensions.x" :height="canvasDimensions.y" @mousedown="onMouseDown($event)"
+			    @mousemove="onMouseMove($event)" @mouseup="onMouseUp($event)" @mouseleave="onMouseUp($event)" :style="dimensionsToStyle"></canvas>
 		</div>
 
 		<div class="control-group">
