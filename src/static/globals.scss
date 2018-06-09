@@ -1,0 +1,20 @@
+/*
+===================================
+	Colour
+===================================
+*/
+
+$text--light: #222;
+$text--dark: white;
+$background--dark:#223;
+/*
+===================================
+	Spacing
+===================================
+*/
+
+$spacing-ratio:1.666;
+$spacing--small: 8px;
+$spacing--medium: $spacing--small * $spacing-ratio;
+$spacing--large: $spacing--medium * $spacing-ratio;
+$spacing--huge: $spacing--large * $spacing-ratio;
