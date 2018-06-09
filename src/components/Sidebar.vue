@@ -1,26 +1,33 @@
 <template>
 	<section id="sidebar">
-		<h1>test</h1>
+		<h1>Tools</h1>
+		<div class="tools">
+			<toolbox/>
+			<color-selector></color-selector>
+		</div>
 	</section>
 </template>
 
 <script>
-	export default {
-
-	}
-
+import colorSelector from './Tools/colorSelector.vue';
+import toolbox from './Tools/ToolBox.vue';
+export default {
+	components: {
+		colorSelector,
+		toolbox,
+	},
+};
 </script>
 
 <style lang="scss">
-	@import "../static/globals.scss";
-	#sidebar {
-		padding: $spacing--medium;
-		height: 100%;
-		min-width: 200px;
-		max-width: 400px;
-		width: 20vw;
-		background-color: $background--dark;
-		color: $text--dark; // float: left;
-	}
-
+@import '../static/globals.scss';
+#sidebar {
+	padding: $spacing--medium;
+	height: 100%;
+	min-width: 200px;
+	max-width: 400px;
+	width: 20vw;
+	background-color: $background--dark;
+	color: $text--dark; // float: left;
+}
 </style>
