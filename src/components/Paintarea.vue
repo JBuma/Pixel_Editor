@@ -3,13 +3,13 @@
 		<div class="canvas-wrapper" :style="dimensionsToStyle">
 			<canvas ref="canvas" id="canvas" :width="gridDimensions.x" :height="gridDimensions.y" :style="dimensionsToStyle">
 			</canvas>
-			<!-- TODO: Make canvas size not hardcoded -->
-			<canvas ref="canvas-grid" id="canvas-grid" :width="canvasDimensions.x" :height="canvasDimensions.y" @mousedown="onMouseDown($event)" @mousemove="onMouseMove($event)"
-			    @mouseup="onMouseUp($event)" @mouseleave="onMouseUp($event)" :style="dimensionsToStyle"></canvas>
+			<canvas ref="canvas-grid" id="canvas-grid" :width="canvasDimensions.x" :height="canvasDimensions.y" @mousedown="onMouseDown($event)"
+			    @mousemove="onMouseMove($event)" @mouseup="onMouseUp($event)" @mouseleave="onMouseUp($event)" :style="dimensionsToStyle"></canvas>
 		</div>
 
 		<div class="control-group">
-			<button id="save-image" v-on:click="saveImage">Save image</button>
+			<!-- <button id="save-image" v-on:click="saveImage">Save image</button> -->
+			<button id="test" v-on:click="paintGrid">Test</button>
 		</div>
 	</section>
 </template>
@@ -27,18 +27,14 @@
 					y: 16,
 				},
 				canvasDimensions: {
-					x: 750,
-					y: 750,
+					x: 250,
+					y: 250,
 				},
 				imageDimensions: {
 					x: 128,
 					y: 128,
 				},
-
-				zoomLevel: 100,
-				// tempBuffer: null,
 				dataURI: null,
-				// isDrawing: false
 			};
 		},
 		computed: {
@@ -48,20 +44,29 @@
 		},
 		methods: {
 			paintGrid() {
-				let gridSize = this.canvasDimensions.x / this.gridDimensions.x;
+				let gridSizeX = this.canvasDimensions.x / this.gridDimensions.x;
+				let gridSizeY = this.canvasDimensions.y / this.gridDimensions.y;
+				this.gridCtx.clearRect(0, 0, this.canvasDimensions.x, this.canvasDimensions.y);
 				this.gridCtx.strokeStyle = 'rgba(100,100,100,50)';
 				for (let x = 0; x < this.gridDimensions.x; x++) {
 					this.gridCtx.beginPath;
-					this.gridCtx.moveTo(x * gridSize, 0);
-					this.gridCtx.lineTo(x * gridSize, this.canvasDimensions.x);
+					this.gridCtx.moveTo(x * gridSizeX, 0);
+					this.gridCtx.lineTo(x * gridSizeX, this.canvasDimensions.x);
 					this.gridCtx.stroke();
 				}
 				for (let y = 0; y < this.gridDimensions.y; y++) {
 					this.gridCtx.beginPath;
-					this.gridCtx.moveTo(0, y * gridSize);
-					this.gridCtx.lineTo(this.canvasDimensions.y, y * gridSize);
+					this.gridCtx.moveTo(0, y * gridSizeY);
+					this.gridCtx.lineTo(this.canvasDimensions.y, y * gridSizeY);
 					this.gridCtx.stroke();
 				}
+				let idata = this.gridCtx.createImageData(
+					this.canvasDimensions.x,
+					this.canvasDimensions.y,
+				);
+				// idata.data.set(this.gridCtx.getImageData(0, 0, this.canvasDimensions.x, this.canvasDimensions.y));
+				// this.gridCtx.putImageData(idata, 0, 0);
+				console.log("Paintgrid");
 			},
 			updateImage() {
 				let idata = this.ctx.createImageData(
@@ -135,8 +140,17 @@
 				window.open(tempCanvas.toDataURL());
 				console.log(this.dataURI);
 			},
+			handleScroll(e) {
+				// console.log(e);
+				this.canvasDimensions.x -= e.deltaY * this.$store.state.settings.zoomSensitivity;
+				this.canvasDimensions.y -= e.deltaY * this.$store.state.settings.zoomSensitivity;
+				if (this.canvasDimensions.x < 30) this.canvasDimensions.x = 30;
+				if (this.canvasDimensions.y < 30) this.canvasDimensions.y = 30;
+				// this.paintGrid();
+			}
 		},
 		mounted() {
+			document.getElementById("paint-area").addEventListener('wheel', (e) => this.handleScroll(e));
 			this.imageCanvas = document.getElementById('canvas');
 			this.ctx = this.imageCanvas.getContext('2d');
 			this.gridCanvas = document.getElementById('canvas-grid');
@@ -158,13 +172,28 @@
 					this.tempBuffer[pos + 3] = 0; // set alpha channel
 				}
 			}
-			console.log(this.tempBuffer);
+			// console.log(this.tempBuffer);
 			this.$store.dispatch('setBuffer', this.tempBuffer);
-			console.log(this.$store.state.imageBuffer);
+			// console.log(this.$store.state.imageBuffer);
 
 			this.updateImage();
 			this.paintGrid();
 		},
+		beforeDestroy() {
+			document.getElementById('paint-area').removeEventListener('wheel', this.handleScroll);
+		},
+		watch: {
+			canvasDimensions: {
+				handler: function (newDimensions, oldDimensions) {
+					// console.log("Watce");
+					setTimeout(() => {
+						this.paintGrid();
+					}, 1);
+					// this.paintGrid();
+				},
+				deep: true
+			}
+		}
 	};
 
 </script>
@@ -180,6 +209,9 @@
 		flex-flow: column nowrap;
 		justify-content: center;
 		align-items: center;
+		overflow: hidden;
+		max-width: 80vw;
+		max-height: 100%;
 	}
 
 	.canvas-wrapper {

@@ -115,10 +115,11 @@
 
 	.tool {
 		position: relative;
-		padding: $spacing--large;
+		padding: $spacing--medium;
 		margin: $spacing--small;
 		border-radius: $spacing--small;
 		background-color: $background--dark-alt;
+		border: 2px solid $border--dark;
 
 		>i {
 			height: 100%;
@@ -127,12 +128,12 @@
 		}
 		&:hover,
 		&:focus {
-			background-color: red;
+			background-color: $background--dark-pressed;
 			cursor: pointer;
 		}
 		&.selected {
-			background-color: red;
-			border: 2px solid $border--dark;
+			background-color: $background--dark-pressed;
+			border: 2px solid $border--light;
 		}
 	}
 

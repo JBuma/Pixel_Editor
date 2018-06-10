@@ -3,11 +3,12 @@
 		<div class="logo-area item">LOGO</div>
 		<ul class="menu-items">
 			<li class="item">
-				<i class="file icon"></i> File</li>
-			<li class="item">
-				<i class="cogs icon"></i>Settings</li>
-			<li class="item">
-				<i class="question icon"></i>Help</li>
+				<i class="file icon"></i> File
+			</li>
+			<!-- <li class="item">
+				<i class="cogs icon"></i>Settings</li> -->
+			<!-- <li class="item">
+				<i class="question icon"></i>Help</li> -->
 		</ul>
 	</nav>
 </template>
