@@ -1,11 +1,11 @@
 <template>
 	<section id="paint-area">
-		<div class="canvas-wrapper">
-			<canvas ref="canvas" id="canvas" :width="gridDimensions.x" :height="gridDimensions.y">
+		<div class="canvas-wrapper" :style="dimensionsToStyle">
+			<canvas ref="canvas" id="canvas" :width="gridDimensions.x" :height="gridDimensions.y" :style="dimensionsToStyle">
 			</canvas>
 			<!-- TODO: Make canvas size not hardcoded -->
-			<canvas ref="canvas-grid" id="canvas-grid" width="500" height="500" @mousedown="onMouseDown($event)" @mousemove="onMouseMove($event)"
-			    @mouseup="onMouseUp($event)" @mouseleave="onMouseUp($event)" @contextmenu="deletePixel($event)"></canvas>
+			<canvas ref="canvas-grid" id="canvas-grid" :width="canvasDimensions.x" :height="canvasDimensions.y" @mousedown="onMouseDown($event)" @mousemove="onMouseMove($event)"
+			    @mouseup="onMouseUp($event)" @mouseleave="onMouseUp($event)" :style="dimensionsToStyle"></canvas>
 		</div>
 
 		<div class="control-group">
@@ -23,12 +23,12 @@
 				gridCanvas: null,
 				gridCtx: null,
 				gridDimensions: {
-					x: 32,
-					y: 32,
+					x: 16,
+					y: 16,
 				},
 				canvasDimensions: {
-					x: 500,
-					y: 500,
+					x: 750,
+					y: 750,
 				},
 				imageDimensions: {
 					x: 128,
@@ -36,10 +36,15 @@
 				},
 
 				zoomLevel: 100,
-				tempBuffer: null,
+				// tempBuffer: null,
 				dataURI: null,
-				isDrawing: false
+				// isDrawing: false
 			};
+		},
+		computed: {
+			dimensionsToStyle: function () {
+				return `width:${this.canvasDimensions.x}px;height:${this.canvasDimensions.y}px;`
+			}
 		},
 		methods: {
 			paintGrid() {
@@ -105,32 +110,6 @@
 				// console.log(pos);
 
 				return pos;
-			},
-			placePixel(e) {
-
-			},
-			getColor(e) {
-				let pos = this.getPosition(e.layerX, e.layerY);
-				let color = {
-					r: 255,
-					g: 255,
-					b: 255,
-					a: 1,
-				};
-				color.r = this.buffer[pos];
-				color.g = this.buffer[pos + 1];
-				color.b = this.buffer[pos + 2];
-				color.a = this.buffer[pos + 3] / 255;
-				this.$store.dispatch('setCurrentColor', color);
-			},
-			deletePixel(e) {
-				let pos = this.getPosition(e.layerX, e.layerY);
-				this.buffer[pos] = this.$store.state.currentColor.r; //Red
-				this.buffer[pos + 1] = this.$store.state.currentColor.g; //Green
-				this.buffer[pos + 2] = this.$store.state.currentColor.b; //Blue
-				this.buffer[pos + 3] = 0; //Alpha
-				this.updateImage();
-				e.preventDefault();
 			},
 			saveImage() {
 				this.dataURI = this.imageCanvas.toDataURL();
@@ -204,15 +183,14 @@
 	}
 
 	.canvas-wrapper {
-		position: relative;
-		width: 500px;
-		height: 500px;
+		position: relative; // width: 500px;
+		// height: 500px;
 		border: 1px solid black;
 	}
 
 	#canvas {
-		width: 500px;
-		height: 500px;
+		// width: 500px;
+		// height: 500px;
 		margin: 0 auto; // border: 2px solid red;
 		image-rendering: optimizeSpeed;
 		image-rendering: -moz-crisp-edges;

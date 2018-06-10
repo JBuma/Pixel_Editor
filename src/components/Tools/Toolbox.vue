@@ -43,8 +43,16 @@
 						name: 'Eyedropper',
 						icon: 'eye dropper',
 						selected: false,
-						onMouseDown: () => {
-							console.log("Down");
+						tempBuffer: null,
+						onMouseDown: (pos) => {
+							this.tempBuffer = this.$store.state.imageBuffer;
+							this.isDrawing = true;
+							let tempColor = this.$store.state.currentColor;
+							tempColor.r = this.tempBuffer[pos.bufferPos];
+							tempColor.g = this.tempBuffer[pos.bufferPos + 1];
+							tempColor.b = this.tempBuffer[pos.bufferPos + 2];
+							tempColor.a = this.tempBuffer[pos.bufferPos + 3];
+							this.$store.dispatch('setCurrentColor', tempColor);
 						},
 					},
 					{
