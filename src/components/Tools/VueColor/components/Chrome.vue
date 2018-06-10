@@ -340,6 +340,8 @@
 		text-align: center;
 		display: block;
 		margin-top: 12px;
+		user-select: none;
+		-moz-user-select: -moz-none;
 	}
 
 	.vc-chrome__disable-alpha .vc-chrome-active-color {

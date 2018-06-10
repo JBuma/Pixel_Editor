@@ -7,66 +7,125 @@
 </template>
 
 <script>
-export default {
-	data() {
-		return {
-			// selected: {},
-			tools: [
-				{
-					name: 'Pencil',
-					icon: 'paint brush',
-					selected: true,
-				},
-				{
-					name: 'Eyedropper',
-					icon: 'eye dropper',
-					selected: false,
-				},
-			],
-		};
-	},
-	methods: {
-		selectTool(tool) {
-			this.tools.forEach(tool => {
-				tool.selected = false;
-			});
-			tool.selected = true;
-			this.$store.dispatch('setCurrentTool', tool);
-			// this.selected = tool;
+	export default {
+		data() {
+			return {
+				tools: [{
+						name: 'Pencil',
+						icon: 'paint brush',
+						selected: false,
+						isDrawing: false,
+						tempBuffer: null,
+						onMouseDown: (pos) => {
+							console.log(pos.bufferPos);
+							this.tempBuffer = this.$store.state.imageBuffer;
+							this.isDrawing = true;
+							this.tempBuffer[pos.bufferPos] = this.$store.state.currentColor.r; //Red
+							this.tempBuffer[pos.bufferPos + 1] = this.$store.state.currentColor.g; //Green
+							this.tempBuffer[pos.bufferPos + 2] = this.$store.state.currentColor.b; //Blue
+							this.tempBuffer[pos.bufferPos + 3] = this.$store.state.currentColor.a * 255; //Alpha
+							this.$store.dispatch("setBuffer", this.tempBuffer);
+						},
+						onMouseMove: (pos) => {
+							if (this.isDrawing) {
+								this.tempBuffer[pos.bufferPos] = this.$store.state.currentColor.r; //Red
+								this.tempBuffer[pos.bufferPos + 1] = this.$store.state.currentColor.g; //Green
+								this.tempBuffer[pos.bufferPos + 2] = this.$store.state.currentColor.b; //Blue
+								this.tempBuffer[pos.bufferPos + 3] = this.$store.state.currentColor.a * 255; //Alpha
+								this.$store.dispatch("setBuffer", this.tempBuffer);
+							}
+						},
+						onMouseUp: () => {
+							this.isDrawing = false;
+						}
+					},
+					{
+						name: 'Eyedropper',
+						icon: 'eye dropper',
+						selected: false,
+						onMouseDown: () => {
+							console.log("Down");
+						},
+					},
+					{
+						name: 'Eraser',
+						icon: 'eraser',
+						selected: false,
+						isErasing: false,
+						tempBuffer: null,
+						onMouseDown: (pos) => {
+							this.tempBuffer = this.$store.state.imageBuffer;
+							this.isErasing = true
+							this.tempBuffer[pos.bufferPos] = this.$store.state.currentColor.r; //Red
+							this.tempBuffer[pos.bufferPos + 1] = this.$store.state.currentColor.g; //Green
+							this.tempBuffer[pos.bufferPos + 2] = this.$store.state.currentColor.b; //Blue
+							this.tempBuffer[pos.bufferPos + 3] = 0; //Alpha
+							this.$store.dispatch("setBuffer", this.tempBuffer);
+						},
+						onMouseMove: (pos) => {
+							if (this.isErasing) {
+								this.tempBuffer[pos.bufferPos] = this.$store.state.currentColor.r; //Red
+								this.tempBuffer[pos.bufferPos + 1] = this.$store.state.currentColor.g; //Green
+								this.tempBuffer[pos.bufferPos + 2] = this.$store.state.currentColor.b; //Blue
+								this.tempBuffer[pos.bufferPos + 3] = 0; //Alpha
+								this.$store.dispatch("setBuffer", this.tempBuffer);
+							}
+						},
+						onMouseUp: (pos) => {
+							this.isErasing = false;
+						}
+					},
+				],
+			};
 		},
-	},
-};
+		methods: {
+			selectTool(tool) {
+				this.tools.forEach(tool => {
+					tool.selected = false;
+				});
+				tool.selected = true;
+				this.$store.dispatch('setCurrentTool', {
+					...tool
+				});
+			},
+		},
+		mounted() {
+			this.selectTool(this.tools[0]);
+		}
+	};
+
 </script>
 
 <style lang='scss'>
-@import '~vars';
-#toolbox {
-	display: flex;
-	flex-flow: row wrap;
-	justify-content: center;
-	align-items: center;
-}
+	@import '~vars';
+	#toolbox {
+		display: flex;
+		flex-flow: row wrap;
+		justify-content: center;
+		align-items: center;
+	}
 
-.tool {
-	position: relative;
-	padding: $spacing--large;
-	margin: $spacing--small;
-	border-radius: $spacing--small;
-	background-color: $background--dark-alt;
+	.tool {
+		position: relative;
+		padding: $spacing--large;
+		margin: $spacing--small;
+		border-radius: $spacing--small;
+		background-color: $background--dark-alt;
 
-	> i {
-		height: 100%;
-		width: 100%;
-		margin: 0;
+		>i {
+			height: 100%;
+			width: 100%;
+			margin: 0;
+		}
+		&:hover,
+		&:focus {
+			background-color: red;
+			cursor: pointer;
+		}
+		&.selected {
+			background-color: red;
+			border: 2px solid $border--dark;
+		}
 	}
-	&:hover,
-	&:focus {
-		background-color: red;
-		cursor: pointer;
-	}
-	&.selected {
-		background-color: red;
-		border: 2px solid $border--dark;
-	}
-}
+
 </style>

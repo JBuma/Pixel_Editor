@@ -13,6 +13,13 @@ export default new Vuex.Store({
 			a: 255,
 		},
 		currentTool: {},
+		settings: {
+			gridDimensions: {
+				x: 16,
+				y: 16,
+			},
+		},
+		imageBuffer: new Uint8ClampedArray(),
 	},
 	mutations: {
 		setCurrentColor(state, currentColor) {
@@ -21,6 +28,12 @@ export default new Vuex.Store({
 		setCurrentTool(state, currentTool) {
 			state.currentTool = currentTool;
 		},
+		setSettings(state, settings) {
+			state.settings = settings;
+		},
+		setBuffer(state, buffer) {
+			state.imageBuffer = buffer;
+		},
 	},
 	actions: {
 		setCurrentColor({ commit }, currentColor) {
@@ -28,6 +41,12 @@ export default new Vuex.Store({
 		},
 		setCurrentTool({ commit }, currentTool) {
 			commit('setCurrentTool', currentTool);
+		},
+		setSettings({ commit }, settings) {
+			commit('setSettings', settings);
+		},
+		setBuffer({ commit }, buffer) {
+			commit('setBuffer', buffer);
 		},
 	},
 });
