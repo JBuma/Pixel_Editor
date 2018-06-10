@@ -36,24 +36,16 @@ export default new Vuex.Store({
 		},
 	},
 	actions: {
-		setCurrentColor({
-			commit
-		}, currentColor) {
+		setCurrentColor({ commit }, currentColor) {
 			commit('setCurrentColor', currentColor);
 		},
-		setCurrentTool({
-			commit
-		}, currentTool) {
+		setCurrentTool({ commit }, currentTool) {
 			commit('setCurrentTool', currentTool);
 		},
-		setSettings({
-			commit
-		}, settings) {
+		setSettings({ commit }, settings) {
 			commit('setSettings', settings);
 		},
-		setBuffer({
-			commit
-		}, buffer) {
+		setBuffer({ commit }, buffer) {
 			commit('setBuffer', buffer);
 		},
 	},
