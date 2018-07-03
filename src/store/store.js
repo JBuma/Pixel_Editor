@@ -14,6 +14,7 @@ export default new Vuex.Store({
 		},
 		currentTool: {},
 		settings: {
+			gridActive: true,
 			zoomSensitivity: 7.5,
 			gridDimensions: {
 				x: 16,

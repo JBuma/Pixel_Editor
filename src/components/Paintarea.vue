@@ -1,15 +1,11 @@
 <template>
 	<section id="paint-area">
 		<div class="canvas-wrapper" :style="dimensionsToStyle">
-			<canvas ref="canvas" id="canvas" :width="gridDimensions.x" :height="gridDimensions.y" :style="dimensionsToStyle">
+			<canvas ref="canvas" id="canvas" :width="this.$store.state.settings.gridDimensions.x" :height="this.$store.state.settings.gridDimensions.y"
+			    :style="dimensionsToStyle">
 			</canvas>
 			<canvas ref="canvas-grid" id="canvas-grid" :width="canvasDimensions.x" :height="canvasDimensions.y" @mousedown="onMouseDown($event)"
 			    @mousemove="onMouseMove($event)" @mouseup="onMouseUp($event)" @mouseleave="onMouseUp($event)" :style="dimensionsToStyle"></canvas>
-		</div>
-
-		<div class="control-group">
-			<!-- <button id="save-image" v-on:click="saveImage">Save image</button> -->
-			<button id="test" v-on:click="paintGrid">Test</button>
 		</div>
 	</section>
 </template>
@@ -27,8 +23,8 @@
 					y: 16,
 				},
 				canvasDimensions: {
-					x: 250,
-					y: 250,
+					x: 500,
+					y: 500,
 				},
 				imageDimensions: {
 					x: 128,
@@ -44,34 +40,29 @@
 		},
 		methods: {
 			paintGrid() {
-				let gridSizeX = this.canvasDimensions.x / this.gridDimensions.x;
-				let gridSizeY = this.canvasDimensions.y / this.gridDimensions.y;
+				let gridSizeX = this.canvasDimensions.x / this.$store.state.settings.gridDimensions.x;
+				let gridSizeY = this.canvasDimensions.y / this.$store.state.settings.gridDimensions.y;
 				this.gridCtx.clearRect(0, 0, this.canvasDimensions.x, this.canvasDimensions.y);
-				this.gridCtx.strokeStyle = 'rgba(100,100,100,50)';
-				for (let x = 0; x < this.gridDimensions.x; x++) {
-					this.gridCtx.beginPath;
-					this.gridCtx.moveTo(x * gridSizeX, 0);
-					this.gridCtx.lineTo(x * gridSizeX, this.canvasDimensions.x);
-					this.gridCtx.stroke();
+				if (this.$store.state.settings.gridActive) {
+					this.gridCtx.strokeStyle = 'rgba(100,100,100,50)';
+					for (let x = 0; x <= this.$store.state.settings.gridDimensions.x; x++) {
+						this.gridCtx.beginPath;
+						this.gridCtx.moveTo(x * gridSizeX, 0);
+						this.gridCtx.lineTo(x * gridSizeX, this.canvasDimensions.x);
+						this.gridCtx.stroke();
+					}
+					for (let y = 0; y <= this.$store.state.settings.gridDimensions.y; y++) {
+						this.gridCtx.beginPath;
+						this.gridCtx.moveTo(0, y * gridSizeY);
+						this.gridCtx.lineTo(this.canvasDimensions.y, y * gridSizeY);
+						this.gridCtx.stroke();
+					}
 				}
-				for (let y = 0; y < this.gridDimensions.y; y++) {
-					this.gridCtx.beginPath;
-					this.gridCtx.moveTo(0, y * gridSizeY);
-					this.gridCtx.lineTo(this.canvasDimensions.y, y * gridSizeY);
-					this.gridCtx.stroke();
-				}
-				let idata = this.gridCtx.createImageData(
-					this.canvasDimensions.x,
-					this.canvasDimensions.y,
-				);
-				// idata.data.set(this.gridCtx.getImageData(0, 0, this.canvasDimensions.x, this.canvasDimensions.y));
-				// this.gridCtx.putImageData(idata, 0, 0);
-				console.log("Paintgrid");
 			},
 			updateImage() {
 				let idata = this.ctx.createImageData(
-					this.gridDimensions.x,
-					this.gridDimensions.y,
+					this.$store.state.settings.gridDimensions.x,
+					this.$store.state.settings.gridDimensions.y,
 				);
 				idata.data.set(this.$store.state.imageBuffer);
 				this.ctx.putImageData(idata, 0, 0);
@@ -106,12 +97,12 @@
 					bufferPos: 0
 				};
 				pos.gridX = Math.floor(
-					x / (this.canvasDimensions.x / this.gridDimensions.x),
+					x / (this.canvasDimensions.x / this.$store.state.settings.gridDimensions.x),
 				);
 				pos.gridY = Math.floor(
-					y / (this.canvasDimensions.y / this.gridDimensions.y),
+					y / (this.canvasDimensions.y / this.$store.state.settings.gridDimensions.y),
 				);
-				pos.bufferPos = (pos.gridY * this.gridDimensions.x + pos.gridX) * 4;
+				pos.bufferPos = (pos.gridY * this.$store.state.settings.gridDimensions.x + pos.gridX) * 4;
 				// console.log(pos);
 
 				return pos;
@@ -147,6 +138,28 @@
 				if (this.canvasDimensions.x < 30) this.canvasDimensions.x = 30;
 				if (this.canvasDimensions.y < 30) this.canvasDimensions.y = 30;
 				// this.paintGrid();
+			},
+			createBuffer() {
+				this.tempBuffer = new Uint8ClampedArray(
+					this.$store.state.settings.gridDimensions.x * this.$store.state.settings.gridDimensions.y * 4,
+				);
+				console.log(this.tempBuffer);
+				for (var y = 0; y < this.$store.state.settings.gridDimensions.y; y++) {
+					for (var x = 0; x < this.$store.state.settings.gridDimensions.x; x++) {
+						var pos = (y * this.$store.state.settings.gridDimensions.x + x) * 4; // position in buffer based on x and y
+						this.tempBuffer[pos] = 0; // some R value [0, 255]
+						this.tempBuffer[pos + 1] = 0; // some G value
+						this.tempBuffer[pos + 2] = 0; // some B value
+						this.tempBuffer[pos + 3] = 0; // set alpha channel
+					}
+				}
+				// console.log(this.tempBuffer);
+				this.$store.dispatch('setBuffer', this.tempBuffer);
+			},
+			newCanvas() {
+				this.createBuffer();
+				this.updateImage();
+				this.paintGrid();
 			}
 		},
 		mounted() {
@@ -160,24 +173,7 @@
 			this.ctx.msImageSmoothingEnabled = false;
 			this.ctx.imageSmoothingEnabled = false;
 
-			this.tempBuffer = new Uint8ClampedArray(
-				this.gridDimensions.x * this.gridDimensions.y * 4,
-			);
-			for (var y = 0; y < this.gridDimensions.y; y++) {
-				for (var x = 0; x < this.gridDimensions.x; x++) {
-					var pos = (y * this.gridDimensions.x + x) * 4; // position in buffer based on x and y
-					this.tempBuffer[pos] = 0; // some R value [0, 255]
-					this.tempBuffer[pos + 1] = 0; // some G value
-					this.tempBuffer[pos + 2] = 0; // some B value
-					this.tempBuffer[pos + 3] = 0; // set alpha channel
-				}
-			}
-			// console.log(this.tempBuffer);
-			this.$store.dispatch('setBuffer', this.tempBuffer);
-			// console.log(this.$store.state.imageBuffer);
-
-			this.updateImage();
-			this.paintGrid();
+			this.newCanvas();
 		},
 		beforeDestroy() {
 			document.getElementById('paint-area').removeEventListener('wheel', this.handleScroll);
@@ -217,7 +213,7 @@
 	.canvas-wrapper {
 		position: relative; // width: 500px;
 		// height: 500px;
-		border: 1px solid black;
+		border: 2px solid black;
 	}
 
 	#canvas {
@@ -237,7 +233,7 @@
 		position: absolute;
 		top: 0;
 		left: 0;
-		z-index: 10;
+		z-index: 2;
 	}
 
 </style>

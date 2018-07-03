@@ -17,7 +17,6 @@
 						isDrawing: false,
 						tempBuffer: null,
 						onMouseDown: (pos) => {
-							console.log(pos.bufferPos);
 							this.tempBuffer = this.$store.state.imageBuffer;
 							this.isDrawing = true;
 							this.tempBuffer[pos.bufferPos] = this.$store.state.currentColor.r; //Red
@@ -46,8 +45,8 @@
 						tempBuffer: null,
 						onMouseDown: (pos) => {
 							this.tempBuffer = this.$store.state.imageBuffer;
-							this.isDrawing = true;
-							let tempColor = this.$store.state.currentColor;
+							let tempColor = { ...this.$store.state.currentColor
+							};
 							tempColor.r = this.tempBuffer[pos.bufferPos];
 							tempColor.g = this.tempBuffer[pos.bufferPos + 1];
 							tempColor.b = this.tempBuffer[pos.bufferPos + 2];

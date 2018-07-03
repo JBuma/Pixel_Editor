@@ -4,6 +4,8 @@
 ===================================
 */
 
+$color--primary:teal; //TODO: is temporary, make good later.
+$color--primary-pressed: darken($color:$color--primary, $amount:5%);
 $text--light: #222;
 $text--light-secondary: #444;
 $text--dark: white;
@@ -25,3 +27,11 @@ $spacing--small: 8px;
 $spacing--medium: $spacing--small * $spacing-ratio;
 $spacing--large: $spacing--medium * $spacing-ratio;
 $spacing--huge: $spacing--large * $spacing-ratio;
+/*
+===================================
+	Typography
+===================================
+*/
+
+$text--small: 10px;
+$text--large:20px;
