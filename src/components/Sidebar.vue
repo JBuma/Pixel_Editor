@@ -29,7 +29,7 @@
 		max-width: 400px;
 		width: 20vw;
 		background-color: $background--dark;
-		color: $text--dark; // float: left;
+		color: $text--dark;
 	}
 
 </style>
