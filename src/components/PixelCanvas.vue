@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import {eventBus} from "./eventBus.js";
+
 	export default {
 		data() {
 			return {
@@ -157,6 +159,11 @@
 			newCanvas() {
 				this.createBuffer();
 				this.updateImage();
+				this.gridSize.x = this.canvasDimensions.x / this.$store.state.settings.gridDimensions.x;
+				this.gridSize.y = this.canvasDimensions.y / this.$store.state.settings.gridDimensions.y;
+			},
+			createNewImage(){
+
 			}
 		},
 		mounted() {
@@ -169,6 +176,7 @@
 			this.ctx.msImageSmoothingEnabled = false;
 			this.ctx.imageSmoothingEnabled = false;
 			this.newCanvas();
+			eventBus.$on("createNewImage",this.newCanvas);
 		},
 		watch: {
 			canvasDimensions: {

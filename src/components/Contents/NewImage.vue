@@ -43,7 +43,9 @@
 </template>
 
 <script>
+import {eventBus} from "../eventBus.js";
 	export default {
+
 		data() {
 			return {
 				preset: "16x16",
@@ -62,6 +64,7 @@
 				tempDimensions.y = this.ySize;
 				tempSettings.gridDimensions = tempDimensions;
 				this.$store.dispatch("setSettings", tempSettings);
+				eventBus.$emit("createNewImage");
 			}
 		},
 		watch: {

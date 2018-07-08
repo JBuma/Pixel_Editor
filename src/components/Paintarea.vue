@@ -1,6 +1,9 @@
 <template>
-	<section id="paint-area">
-		<pixel-canvas id='pixel-canvas' :canvas-dimensions="canvasDimensions"></pixel-canvas>
+	<section @mousedown.middle="beginDragCanvas($event)" @mouseleave="stopDragCanvas($event)" @mouseup.middle="stopDragCanvas($event)"
+	    id="paint-area">
+		<div id="canvas-cover" style="width:100%;height:100%;"></div>
+		<pixel-canvas @mousedown.middle="beginDragCanvas($event)" @mouseleave="stopDragCanvas($event)" @mouseup.middle="stopDragCanvas($event)"
+		    id='pixel-canvas' :canvas-dimensions="canvasDimensions"></pixel-canvas>
 	</section>
 </template>
 
@@ -16,6 +19,7 @@
 					x: 500,
 					y: 500,
 				},
+				isDragging: false
 			};
 		},
 		computed: {
@@ -31,12 +35,36 @@
 				if (this.canvasDimensions.x < 30) this.canvasDimensions.x = 30;
 				if (this.canvasDimensions.y < 30) this.canvasDimensions.y = 30;
 			},
+			beginDragCanvas(e) {
+				this.isDragging = true;
+				console.log(e);
+
+			},
+			dragCanvas(e) {
+				if (this.isDragging) {
+					console.log(e);
+				}
+			},
+			stopDragCanvas(e) {
+				this.isDragging = false;
+				console.log(e);
+			}
 		},
 		mounted() {
 			document.getElementById("paint-area").addEventListener('wheel', (e) => this.handleScroll(e));
+			document.getElementById('canvas-cover').addEventListener("mousemove", (e) => {
+				console.log(this.isDragging);
+				this.dragCanvas(e);
+			});
+			document.getElementById('pixel-canvas').addEventListener("mousemove", (e) => {
+				console.log(this.isDragging);
+				this.dragCanvas(e);
+			});
 		},
 		beforeDestroy() {
 			document.getElementById('paint-area').removeEventListener('wheel', this.handleScroll);
+			document.getElementById('canvas-cover').removeEventListener("mousemove", this.dragCanvas);
+			document.getElementById('pixel-canvas').removeEventListener("mousemove", this.dragCanvas);
 		},
 	};
 
