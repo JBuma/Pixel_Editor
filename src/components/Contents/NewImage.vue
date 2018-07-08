@@ -57,13 +57,14 @@ import {eventBus} from "../eventBus.js";
 			newImage() {
 				let tempSettings = { ...this.$store.state.settings
 				};
-				let tempDimensions = { ...tempSettings.gridDimensions
+				let tempDimensions = { ...tempSettings.imageDimensions
 				}
 				console.log(tempSettings);
 				tempDimensions.x = this.xSize;
 				tempDimensions.y = this.ySize;
-				tempSettings.gridDimensions = tempDimensions;
+				tempSettings.imageDimensions = tempDimensions;
 				this.$store.dispatch("setSettings", tempSettings);
+				this.$emit("closeModal");
 				eventBus.$emit("createNewImage");
 			}
 		},

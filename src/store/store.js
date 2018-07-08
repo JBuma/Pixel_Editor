@@ -16,7 +16,7 @@ export default new Vuex.Store({
 		settings: {
 			gridActive: true,
 			zoomSensitivity: 7.5,
-			gridDimensions: {
+			imageDimensions: {
 				x: 16,
 				y: 16,
 			},

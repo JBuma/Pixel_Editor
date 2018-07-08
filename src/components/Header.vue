@@ -21,7 +21,7 @@
 			</div>
 		</div>
 		<modal ref="modal" width="600px" height="600px" :can-cancel=false>
-			<component slot="modal-content" :is="modalComponent"></component>
+			<component v-on:closeModal="closeModal" slot="modal-content" :is="modalComponent"></component>
 		</modal>
 	</nav>
 </template>
@@ -50,6 +50,9 @@
 			openModal(content) {
 				this.modalComponent = content;
 				this.$refs["modal"].openModal();
+			},
+			closeModal(){
+				this.$refs["modal"].closeModal();
 			}
 		}
 	};

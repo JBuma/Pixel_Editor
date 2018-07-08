@@ -1,6 +1,6 @@
 <template>
 	<div class="canvas-wrapper">
-		<canvas ref="canvas" id="canvas" :width="this.$store.state.settings.gridDimensions.x" :height="this.$store.state.settings.gridDimensions.y"
+		<canvas ref="canvas" id="canvas" :width="this.$store.state.settings.imageDimensions.x" :height="this.$store.state.settings.imageDimensions.y"
 		    :style="dimensionsToStyle">
 		</canvas>
 		<div ref="canvas-grid" id="canvas-grid" :width="canvasDimensions.x" :height="canvasDimensions.y" @mousedown.left="onMouseDown($event)"
@@ -13,15 +13,14 @@
 					<pattern id="smallGrid" :width="gridSize.x" :height="gridSize.y" patternUnits="userSpaceOnUse">
 						<path :d="smallGridPath" fill="none" stroke="rgba(150,150,150,0.75)" stroke-width="1" />
 					</pattern>
-					<pattern id="grid" :width="gridSize.x*10" :height="gridSize.y*10" patternUnits="userSpaceOnUse">
-						<rect width="80" height="80" fill="url(#smallGrid)" />
-						<path d="M 80 0 L 0 0 0 80" fill="none" stroke="gray" stroke-width="2" />
+					<pattern id="grid" :width="gridSize.x*8" :height="gridSize.y*8" patternUnits="userSpaceOnUse">
+						<rect :width="gridSize.x*8" :height="gridSize.y*8" fill="url(#smallGrid)" />
+						<path :d="largeGridPath" fill="none" stroke="gray" stroke-width="2" />
 					</pattern>
 				</defs>
-				<rect width="100%" height="100%" fill="url(#smallGrid)" stroke="rgb(0,0,0)" stroke-width="4" />
+				<rect width="100%" height="100%" fill="url(#grid)" stroke="rgb(0,0,0)" stroke-width="4" />
 			</svg>
 		</div>
-
 	</div>
 </template>
 
@@ -33,11 +32,11 @@ import {eventBus} from "./eventBus.js";
 			return {
 				imageCanvas: null,
 				ctx: null,
-				gridDimensions: {
+				imageDimensions: {
 					x: 16,
 					y: 16,
 				},
-				imageDimensions: {
+				exportDimensions: {
 					x: 128,
 					y: 128,
 				},
@@ -46,10 +45,14 @@ import {eventBus} from "./eventBus.js";
 					y: 16
 				},
 				dataURI: null,
+				canvasDimensions:{
+					x: 500,
+					y: 500
+				}
 			};
 		},
 		props: {
-			canvasDimensions: {
+			tempCanvasDimensions: {
 				type: Object,
 				default: function () {
 					return {
@@ -65,13 +68,16 @@ import {eventBus} from "./eventBus.js";
 			},
 			smallGridPath: function () {
 				return `M ${this.gridSize.x} 0 L 0 0 0 ${this.gridSize.y}`;
+			},
+			largeGridPath: function(){
+				return `M ${this.gridSize.x*10} 0 L 0 0 0 ${this.gridSize.y*10}`
 			}
 		},
 		methods: {
 			updateImage() {
 				let idata = this.ctx.createImageData(
-					this.$store.state.settings.gridDimensions.x,
-					this.$store.state.settings.gridDimensions.y,
+					this.$store.state.settings.imageDimensions.x,
+					this.$store.state.settings.imageDimensions.y,
 				);
 				idata.data.set(this.$store.state.imageBuffer);
 				this.ctx.putImageData(idata, 0, 0);
@@ -109,21 +115,21 @@ import {eventBus} from "./eventBus.js";
 					bufferPos: 0
 				};
 				pos.gridX = Math.floor(
-					x / (this.canvasDimensions.x / this.$store.state.settings.gridDimensions.x),
+					x / (this.canvasDimensions.x / this.$store.state.settings.imageDimensions.x),
 				);
 				pos.gridY = Math.floor(
-					y / (this.canvasDimensions.y / this.$store.state.settings.gridDimensions.y),
+					y / (this.canvasDimensions.y / this.$store.state.settings.imageDimensions.y),
 				);
-				pos.bufferPos = (pos.gridY * this.$store.state.settings.gridDimensions.x + pos.gridX) * 4;
+				pos.bufferPos = (pos.gridY * this.$store.state.settings.imageDimensions.x + pos.gridX) * 4;
 				return pos;
 			},
 			saveImage() {
 				this.dataURI = this.imageCanvas.toDataURL();
-
 				let tempCanvas = document.createElement('canvas');
-				tempCanvas.width = this.imageDimensions.x;
-				tempCanvas.height = this.imageDimensions.y;
+				tempCanvas.width = this.exportDimensions.x;
+				tempCanvas.height = this.exportDimensions.y;
 
+				// Make it render pixel perfect
 				tempCanvas.style =
 					'image-rendering: optimizeSpeed;image-rendering: -moz-crisp-edges;image-rendering: -webkit-optimize-contrast;image-rendering: -o-crisp-edges;	image-rendering: pixelated;	-ms-interpolation-mode: nearest-neighbor;';
 				let tempCtx = tempCanvas.getContext('2d');
@@ -135,19 +141,19 @@ import {eventBus} from "./eventBus.js";
 					this.imageCanvas,
 					0,
 					0,
-					this.imageDimensions.x,
-					this.imageDimensions.y,
+					this.exportDimensions.x,
+					this.exportDimensions.y,
 				);
 				window.open(tempCanvas.toDataURL());
 				console.log(this.dataURI);
 			},
 			createBuffer() {
 				this.tempBuffer = new Uint8ClampedArray(
-					this.$store.state.settings.gridDimensions.x * this.$store.state.settings.gridDimensions.y * 4,
+					this.$store.state.settings.imageDimensions.x * this.$store.state.settings.imageDimensions.y * 4,
 				);
-				for (var y = 0; y < this.$store.state.settings.gridDimensions.y; y++) {
-					for (var x = 0; x < this.$store.state.settings.gridDimensions.x; x++) {
-						var pos = (y * this.$store.state.settings.gridDimensions.x + x) * 4; // position in buffer based on x and y
+				for (var y = 0; y < this.$store.state.settings.imageDimensions.y; y++) {
+					for (var x = 0; x < this.$store.state.settings.imageDimensions.x; x++) {
+						var pos = (y * this.$store.state.settings.imageDimensions.x + x) * 4; // position in buffer based on x and y
 						this.tempBuffer[pos] = 0; // some R value [0, 255]
 						this.tempBuffer[pos + 1] = 0; // some G value
 						this.tempBuffer[pos + 2] = 0; // some B value
@@ -159,16 +165,28 @@ import {eventBus} from "./eventBus.js";
 			newCanvas() {
 				this.createBuffer();
 				this.updateImage();
-				this.gridSize.x = this.canvasDimensions.x / this.$store.state.settings.gridDimensions.x;
-				this.gridSize.y = this.canvasDimensions.y / this.$store.state.settings.gridDimensions.y;
+				this.createNewDimensions(this.tempCanvasDimensions);
 			},
-			createNewImage(){
+			createNewDimensions(newDimensions){
+				// There's probably a simpler way to do this but it's late and at least it works so ¯\_(ツ)_/¯
+					// Get scales first
+					let scaleX = this.$store.state.settings.imageDimensions.x/this.$store.state.settings.imageDimensions.y;
+					let scaleY = this.$store.state.settings.imageDimensions.y/this.$store.state.settings.imageDimensions.x;
+					let biggest;
+					if(scaleX !== 1){
+						biggest = scaleX > 1 ? "x" : "y";
+					}
+					this.canvasDimensions.x = biggest && biggest === "x" ? newDimensions.x*scaleX : newDimensions.x;
+					this.canvasDimensions.y = biggest && biggest === "y" ? newDimensions.y*scaleY : newDimensions.y;
 
+					// Update the gridsize as well
+					this.gridSize.x = this.canvasDimensions.x / this.$store.state.settings.imageDimensions.x;
+					this.gridSize.y = this.canvasDimensions.y / this.$store.state.settings.imageDimensions.y;
 			}
 		},
 		mounted() {
-			this.gridSize.x = this.canvasDimensions.x / this.$store.state.settings.gridDimensions.x;
-			this.gridSize.y = this.canvasDimensions.y / this.$store.state.settings.gridDimensions.y;
+			this.gridSize.x = this.canvasDimensions.x / this.$store.state.settings.imageDimensions.x;
+			this.gridSize.y = this.canvasDimensions.y / this.$store.state.settings.imageDimensions.y;
 			this.imageCanvas = document.getElementById('canvas');
 			this.ctx = this.imageCanvas.getContext('2d');
 			this.ctx.mozImageSmoothingEnabled = false;
@@ -181,11 +199,18 @@ import {eventBus} from "./eventBus.js";
 		watch: {
 			canvasDimensions: {
 				handler: function (newDimensions, oldDimensions) {
-					this.gridSize.x = this.canvasDimensions.x / this.$store.state.settings.gridDimensions.x;
-					this.gridSize.y = this.canvasDimensions.y / this.$store.state.settings.gridDimensions.y;
+					// this.gridSize.x = this.canvasDimensions.x / this.$store.state.settings.imageDimensions.x;
+					// this.gridSize.y = this.canvasDimensions.y / this.$store.state.settings.imageDimensions.y;
+					// this.gridSize.y = this.gridSize.x;
 				},
 				deep: true
 			},
+			tempCanvasDimensions:{
+				handler: function(newDimensions, oldDimensions){
+					this.createNewDimensions(newDimensions);
+				},
+				deep:true
+			}
 		}
 	};
 
