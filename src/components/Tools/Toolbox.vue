@@ -10,9 +10,12 @@
 	export default {
 		data() {
 			return {
+				// TODO: Load from seperate files
 				tools: [{
 						name: 'Pencil',
 						icon: 'paint brush',
+						shortcutKey: "b",
+						// shortcutCode: 66,
 						selected: false,
 						isDrawing: false,
 						tempBuffer: null,
@@ -41,6 +44,8 @@
 					{
 						name: 'Eyedropper',
 						icon: 'eye dropper',
+						shortcutKey: "c",
+						// shortcutCode: 67,
 						selected: false,
 						tempBuffer: null,
 						onMouseDown: (pos) => {
@@ -57,6 +62,8 @@
 					{
 						name: 'Eraser',
 						icon: 'eraser',
+						shortcutKey: "e",
+						// shortcutCode: 69,
 						selected: false,
 						isErasing: false,
 						tempBuffer: null,
@@ -95,9 +102,24 @@
 					...tool
 				});
 			},
+			shortcutPress(e) {
+				this.tools.forEach(tool => {
+					if (tool.shortcutKey === e.key) {
+						this.selectTool(tool);
+					}
+				});
+			}
 		},
 		mounted() {
 			this.selectTool(this.tools[0]);
+			window.addEventListener("keydown", (e) => {
+				this.shortcutPress(e);
+			});
+		},
+		beforeDestroy() {
+			window.removeEventListener("keydown", (e) => {
+				this.shortcutPress(e);
+			});
 		}
 	};
 
