@@ -1,10 +1,8 @@
 <template>
 	<div class="canvas-wrapper">
-		<canvas ref="canvas" id="canvas" :width="this.$store.state.settings.imageDimensions.x" :height="this.$store.state.settings.imageDimensions.y"
-		    :style="dimensionsToStyle">
+		<canvas ref="canvas" id="canvas" :width="this.$store.state.settings.imageDimensions.x" :height="this.$store.state.settings.imageDimensions.y" :style="dimensionsToStyle">
 		</canvas>
-		<div ref="canvas-grid" id="canvas-grid" :width="canvasDimensions.x" :height="canvasDimensions.y" @mousedown.left="onMouseDown($event)"
-		    @mousemove="onMouseMove($event)" @mouseup="onMouseUp($event)" @mouseleave="onMouseUp($event)" :style="dimensionsToStyle">
+		<div ref="canvas-grid" id="canvas-grid" :width="canvasDimensions.x" :height="canvasDimensions.y" @mousedown.left="onMouseDown($event)" @mousemove="onMouseMove($event)" @mouseup.left="onMouseUp($event)" @mouseleave="onMouseUp($event)" :style="dimensionsToStyle">
 			<!-- Blocks clicking/dragging the grid -->
 			<div id="image-blocker" style="width:100%;height:100%;z-index:2;position:absolute;"></div>
 			<!-- Grid -->
@@ -83,18 +81,16 @@ import {eventBus} from "./eventBus.js";
 				this.ctx.putImageData(idata, 0, 0);
 			},
 			onMouseDown(e) {
-				e.stopPropagation();
+				// e.stopPropagation();
 
 				if (this.$store.state.currentTool.onMouseDown) {
 					let pos = this.getPosition(e.layerX, e.layerY);
-					console.log(pos);
-
 					this.$store.state.currentTool.onMouseDown(pos);
 				}
 				this.updateImage();
 			},
 			onMouseMove(e) {
-				e.stopPropagation();
+				// e.stopPropagation();
 				if (this.$store.state.currentTool.onMouseMove) {
 					let pos = this.getPosition(e.layerX, e.layerY);
 					this.$store.state.currentTool.onMouseMove(pos);
@@ -123,30 +119,6 @@ import {eventBus} from "./eventBus.js";
 				pos.bufferPos = (pos.gridY * this.$store.state.settings.imageDimensions.x + pos.gridX) * 4;
 				return pos;
 			},
-			saveImage() {
-				this.dataURI = this.imageCanvas.toDataURL();
-				let tempCanvas = document.createElement('canvas');
-				tempCanvas.width = this.exportDimensions.x;
-				tempCanvas.height = this.exportDimensions.y;
-
-				// Make it render pixel perfect
-				tempCanvas.style =
-					'image-rendering: optimizeSpeed;image-rendering: -moz-crisp-edges;image-rendering: -webkit-optimize-contrast;image-rendering: -o-crisp-edges;	image-rendering: pixelated;	-ms-interpolation-mode: nearest-neighbor;';
-				let tempCtx = tempCanvas.getContext('2d');
-				tempCtx.mozImageSmoothingEnabled = false;
-				tempCtx.webkitImageSmoothingEnabled = false;
-				tempCtx.msImageSmoothingEnabled = false;
-				tempCtx.imageSmoothingEnabled = false;
-				tempCtx.drawImage(
-					this.imageCanvas,
-					0,
-					0,
-					this.exportDimensions.x,
-					this.exportDimensions.y,
-				);
-				window.open(tempCanvas.toDataURL());
-				console.log(this.dataURI);
-			},
 			createBuffer() {
 				this.tempBuffer = new Uint8ClampedArray(
 					this.$store.state.settings.imageDimensions.x * this.$store.state.settings.imageDimensions.y * 4,
@@ -154,10 +126,10 @@ import {eventBus} from "./eventBus.js";
 				for (var y = 0; y < this.$store.state.settings.imageDimensions.y; y++) {
 					for (var x = 0; x < this.$store.state.settings.imageDimensions.x; x++) {
 						var pos = (y * this.$store.state.settings.imageDimensions.x + x) * 4; // position in buffer based on x and y
-						this.tempBuffer[pos] = 0; // some R value [0, 255]
-						this.tempBuffer[pos + 1] = 0; // some G value
-						this.tempBuffer[pos + 2] = 0; // some B value
-						this.tempBuffer[pos + 3] = 0; // set alpha channel
+						this.tempBuffer[pos] = 0; // red value
+						this.tempBuffer[pos + 1] = 0; // green value
+						this.tempBuffer[pos + 2] = 0; // blue value
+						this.tempBuffer[pos + 3] = 0; // alpha value (0,100)
 					}
 				}
 				this.$store.dispatch('setBuffer', this.tempBuffer);
@@ -197,14 +169,6 @@ import {eventBus} from "./eventBus.js";
 			eventBus.$on("createNewImage",this.newCanvas);
 		},
 		watch: {
-			canvasDimensions: {
-				handler: function (newDimensions, oldDimensions) {
-					// this.gridSize.x = this.canvasDimensions.x / this.$store.state.settings.imageDimensions.x;
-					// this.gridSize.y = this.canvasDimensions.y / this.$store.state.settings.imageDimensions.y;
-					// this.gridSize.y = this.gridSize.x;
-				},
-				deep: true
-			},
 			tempCanvasDimensions:{
 				handler: function(newDimensions, oldDimensions){
 					this.createNewDimensions(newDimensions);
@@ -217,26 +181,25 @@ import {eventBus} from "./eventBus.js";
 </script>
 
 <style lang='scss'>
-	@import '~vars';
-	#canvas {
-		// width: 500px;
-		// height: 500px;
-		margin: 0 auto; // border: 2px solid red;
-		image-rendering: optimizeSpeed;
-		image-rendering: -moz-crisp-edges;
-		image-rendering: -webkit-optimize-contrast;
-		image-rendering: -o-crisp-edges;
-		image-rendering: pixelated;
-		-ms-interpolation-mode: nearest-neighbor;
-	}
+@import '~vars';
+#canvas {
+	// width: 500px;
+	// height: 500px;
+	margin: 0 auto; // border: 2px solid red;
+	image-rendering: optimizeSpeed;
+	image-rendering: -moz-crisp-edges;
+	image-rendering: -webkit-optimize-contrast;
+	image-rendering: -o-crisp-edges;
+	image-rendering: pixelated;
+	-ms-interpolation-mode: nearest-neighbor;
+}
 
-	#canvas-grid {
-		// border: 3px solid hotpink;
-		// box-sizing: content-box;
-		position: absolute;
-		top: 0;
-		left: 0;
-		z-index: 2; // border: 2px solid black;
-	}
-
+#canvas-grid {
+	// border: 3px solid hotpink;
+	// box-sizing: content-box;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 2; // border: 2px solid black;
+}
 </style>

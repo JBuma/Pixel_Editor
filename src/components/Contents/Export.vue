@@ -32,6 +32,8 @@
 						<option>64x64</option>
 						<option>128x128</option>
 						<option>256x256</option>
+						<option>512x512</option>
+						<option>1024x1024</option>
 					</select>
 				</div>
 			</div>
@@ -74,7 +76,6 @@
 					this.yExport,
 				);
 				window.open(tempCanvas.toDataURL());
-				// console.log(this.dataURI);
 			},
 		},
 		watch: {
