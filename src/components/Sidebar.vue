@@ -1,11 +1,11 @@
 <template>
-	<section id="sidebar">
+	<aside id="sidebar">
 		<h1>Tools</h1>
 		<div class="tools">
 			<toolbox/>
 			<color-selector></color-selector>
 		</div>
-	</section>
+	</aside>
 </template>
 
 <script>

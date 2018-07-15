@@ -1,10 +1,10 @@
 <template>
-	<section @mousedown.middle="beginDragCanvas($event)" @mouseleave="stopDragCanvas($event)" @mouseup.middle="stopDragCanvas($event)"
+	<main @mousedown.middle="beginDragCanvas($event)" @mouseleave="stopDragCanvas($event)" @mouseup.middle="stopDragCanvas($event)"
 	    id="paint-area">
 		<div id="canvas-cover" style="width:100%;height:100%;"></div>
 		<pixel-canvas @mousedown.middle="beginDragCanvas($event)" @mouseleave="stopDragCanvas($event)" @mouseup="stopDragCanvas($event)"
 		    id='pixel-canvas' :temp-canvas-dimensions="canvasDimensions" :style="transformStyle"></pixel-canvas>
-	</section>
+	</main>
 </template>
 
 <script>
