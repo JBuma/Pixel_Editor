@@ -1,6 +1,7 @@
 <template>
 	<div id="color-selector">
 		<chrome v-model="colors" @input="updateColor"></chrome>
+		<!-- <button @click="changeColor">Change color</button> -->
 	</div>
 </template>
 
@@ -13,47 +14,33 @@
 		data() {
 			return {
 				colors: {
-					hex: '#000000',
-					hsl: {
-						h: 0,
-						s: 0,
-						l: 0,
-						a: 1,
-					},
-					hsv: {
-						h: 0,
-						s: 0,
-						v: 0,
-						a: 1,
-					},
-					rgba: {
-						r: 0,
-						g: 0,
-						b: 0,
-						a: 1,
-					},
-					a: 1,
-				},
-				currentColor: {
 					r: 0,
 					g: 0,
 					b: 0,
-					a: 255,
+					a: 1,
 				},
+				unwatch: null
 			};
 		},
 		methods: {
 			updateColor() {
-				this.$store.dispatch('setCurrentColor', this.colors.rgba);
+				this.$store.dispatch('setCurrentColor', this.colors);
 			},
 		},
-		computed: {
-			colorToString: function () {
-				return `rgba(${this.currentColor.r},${this.currentColor.g},${
-				this.currentColor.b
-			},${this.currentColor.a})`;
-			},
+		mounted() {
+			this.unwatch = this.$store.watch(
+				(state) => {
+					return state.currentColor;
+				},
+				(newState, oldState) => {
+					this.colors = { ...newState.rgba
+					};
+				}
+			)
 		},
+		beforeDestroy() {
+			this.unwatch();
+		}
 	};
 
 </script>

@@ -7,10 +7,12 @@ export default new Vuex.Store({
 	strict: true,
 	state: {
 		currentColor: {
-			r: 0,
-			g: 0,
-			b: 0,
-			a: 255,
+			rgba: {
+				r: 0,
+				g: 0,
+				b: 0,
+				a: 1,
+			}
 		},
 		currentTool: {},
 		settings: {

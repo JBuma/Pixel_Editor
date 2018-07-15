@@ -1,13 +1,20 @@
 <template>
 	<div id="toolbox">
-		<div v-for="tool in tools" :key="tool.name" class="tool" @click="selectTool(tool)" :class="tool.selected?'selected':''">
-			<i :class="'large icon ' +tool.icon"></i>
-		</div>
+		<!-- TODO: Would prefer for tooltips to not be components, but directives, but this is a bit faster for now -->
+		<tooltip v-for="tool in tools" :key="tool.name" :content="`${tool.name} (${tool.shortcutKey.toUpperCase()})`">
+			<div class="tool" @click="selectTool(tool)" :class="tool.selected?'selected':''">
+				<i :class="'large icon ' +tool.icon"></i>
+			</div>
+		</tooltip>
 	</div>
 </template>
 
 <script>
+	import tooltip from "../Tooltip.vue";
 	export default {
+		components: {
+			tooltip
+		},
 		data() {
 			return {
 				// TODO: Load from seperate files
@@ -22,18 +29,18 @@
 						onMouseDown: (pos) => {
 							this.tempBuffer = this.$store.state.imageBuffer;
 							this.isDrawing = true;
-							this.tempBuffer[pos.bufferPos] = this.$store.state.currentColor.r; //Red
-							this.tempBuffer[pos.bufferPos + 1] = this.$store.state.currentColor.g; //Green
-							this.tempBuffer[pos.bufferPos + 2] = this.$store.state.currentColor.b; //Blue
-							this.tempBuffer[pos.bufferPos + 3] = this.$store.state.currentColor.a * 255; //Alpha
+							this.tempBuffer[pos.bufferPos] = this.$store.state.currentColor.rgba.r; //Red
+							this.tempBuffer[pos.bufferPos + 1] = this.$store.state.currentColor.rgba.g; //Green
+							this.tempBuffer[pos.bufferPos + 2] = this.$store.state.currentColor.rgba.b; //Blue
+							this.tempBuffer[pos.bufferPos + 3] = this.$store.state.currentColor.rgba.a * 255; //Alpha
 							this.$store.dispatch("setBuffer", this.tempBuffer);
 						},
 						onMouseMove: (pos) => {
 							if (this.isDrawing) {
-								this.tempBuffer[pos.bufferPos] = this.$store.state.currentColor.r; //Red
-								this.tempBuffer[pos.bufferPos + 1] = this.$store.state.currentColor.g; //Green
-								this.tempBuffer[pos.bufferPos + 2] = this.$store.state.currentColor.b; //Blue
-								this.tempBuffer[pos.bufferPos + 3] = this.$store.state.currentColor.a * 255; //Alpha
+								this.tempBuffer[pos.bufferPos] = this.$store.state.currentColor.rgba.r; //Red
+								this.tempBuffer[pos.bufferPos + 1] = this.$store.state.currentColor.rgba.g; //Green
+								this.tempBuffer[pos.bufferPos + 2] = this.$store.state.currentColor.rgba.b; //Blue
+								this.tempBuffer[pos.bufferPos + 3] = this.$store.state.currentColor.rgba.a * 255; //Alpha
 								this.$store.dispatch("setBuffer", this.tempBuffer);
 							}
 						},
@@ -52,10 +59,13 @@
 							this.tempBuffer = this.$store.state.imageBuffer;
 							let tempColor = { ...this.$store.state.currentColor
 							};
-							tempColor.r = this.tempBuffer[pos.bufferPos];
-							tempColor.g = this.tempBuffer[pos.bufferPos + 1];
-							tempColor.b = this.tempBuffer[pos.bufferPos + 2];
-							tempColor.a = this.tempBuffer[pos.bufferPos + 3];
+							let tempRGBA = { ...tempColor.rgba
+							};
+							tempRGBA.r = this.tempBuffer[pos.bufferPos];
+							tempRGBA.g = this.tempBuffer[pos.bufferPos + 1];
+							tempRGBA.b = this.tempBuffer[pos.bufferPos + 2];
+							// tempRGBA.a = this.tempBuffer[pos.bufferPos + 3] / 255;
+							tempColor.rgba = tempRGBA;
 							this.$store.dispatch('setCurrentColor', tempColor);
 						},
 					},
@@ -70,17 +80,17 @@
 						onMouseDown: (pos) => {
 							this.tempBuffer = this.$store.state.imageBuffer;
 							this.isErasing = true
-							this.tempBuffer[pos.bufferPos] = this.$store.state.currentColor.r; //Red
-							this.tempBuffer[pos.bufferPos + 1] = this.$store.state.currentColor.g; //Green
-							this.tempBuffer[pos.bufferPos + 2] = this.$store.state.currentColor.b; //Blue
+							this.tempBuffer[pos.bufferPos] = this.$store.state.currentColor.rgba.r; //Red
+							this.tempBuffer[pos.bufferPos + 1] = this.$store.state.currentColor.rgba.g; //Green
+							this.tempBuffer[pos.bufferPos + 2] = this.$store.state.currentColor.rgba.b; //Blue
 							this.tempBuffer[pos.bufferPos + 3] = 0; //Alpha
 							this.$store.dispatch("setBuffer", this.tempBuffer);
 						},
 						onMouseMove: (pos) => {
 							if (this.isErasing) {
-								this.tempBuffer[pos.bufferPos] = this.$store.state.currentColor.r; //Red
-								this.tempBuffer[pos.bufferPos + 1] = this.$store.state.currentColor.g; //Green
-								this.tempBuffer[pos.bufferPos + 2] = this.$store.state.currentColor.b; //Blue
+								this.tempBuffer[pos.bufferPos] = this.$store.state.currentColor.rgba.r; //Red
+								this.tempBuffer[pos.bufferPos + 1] = this.$store.state.currentColor.rgba.g; //Green
+								this.tempBuffer[pos.bufferPos + 2] = this.$store.state.currentColor.rgba.b; //Blue
 								this.tempBuffer[pos.bufferPos + 3] = 0; //Alpha
 								this.$store.dispatch("setBuffer", this.tempBuffer);
 							}

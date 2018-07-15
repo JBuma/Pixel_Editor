@@ -56,7 +56,7 @@
 		methods: {
 			exportImage() {
 				let imageCanvas = document.getElementById("canvas");
-				console.log(imageCanvas);
+				// console.log(imageCanvas);
 				let tempCanvas = document.createElement('canvas');
 				tempCanvas.width = this.xExport;
 				tempCanvas.height = this.yExport;
@@ -83,7 +83,7 @@
 				let string = this.preset.split("x");
 				this.xExport = string[0];
 				this.yExport = string[1];
-				console.log("YE");
+				// console.log("YE");
 				// this.xExport
 			}
 		}

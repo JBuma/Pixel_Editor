@@ -47,7 +47,7 @@
 				this.isDragging = true;
 				this.prevMousePosition.x = e.clientX;
 				this.prevMousePosition.y = e.clientY;
-				console.log(e);
+				// console.log(e);
 			},
 			dragCanvas(e) {
 				if (this.isDragging) {
@@ -55,12 +55,12 @@
 					this.canvasPosition.y += e.clientY - this.prevMousePosition.y;
 					this.prevMousePosition.x = e.clientX;
 					this.prevMousePosition.y = e.clientY;
-					console.log(this.canvasPosition.x);
+					// console.log(this.canvasPosition.x);
 				}
 			},
 			stopDragCanvas(e) {
 				this.isDragging = false;
-				console.log(e);
+				// console.log(e);
 			}
 		},
 		mounted() {

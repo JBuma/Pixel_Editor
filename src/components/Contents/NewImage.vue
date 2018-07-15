@@ -43,7 +43,9 @@
 </template>
 
 <script>
-import {eventBus} from "../eventBus.js";
+	import {
+		eventBus
+	} from "../eventBus.js";
 	export default {
 
 		data() {
@@ -59,7 +61,7 @@ import {eventBus} from "../eventBus.js";
 				};
 				let tempDimensions = { ...tempSettings.imageDimensions
 				}
-				console.log(tempSettings);
+				// console.log(tempSettings);
 				tempDimensions.x = this.xSize;
 				tempDimensions.y = this.ySize;
 				tempSettings.imageDimensions = tempDimensions;
