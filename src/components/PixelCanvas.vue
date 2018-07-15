@@ -1,8 +1,10 @@
 <template>
 	<div class="canvas-wrapper">
-		<canvas ref="canvas" id="canvas" :width="this.$store.state.settings.imageDimensions.x" :height="this.$store.state.settings.imageDimensions.y" :style="dimensionsToStyle">
+		<canvas ref="canvas" id="canvas" :width="this.$store.state.settings.imageDimensions.x" :height="this.$store.state.settings.imageDimensions.y"
+		    :style="dimensionsToStyle">
 		</canvas>
-		<div ref="canvas-grid" id="canvas-grid" :width="canvasDimensions.x" :height="canvasDimensions.y" @mousedown.left="onMouseDown($event)" @mousemove="onMouseMove($event)" @mouseup.left="onMouseUp($event)" @mouseleave="onMouseUp($event)" :style="dimensionsToStyle">
+		<div ref="canvas-grid" id="canvas-grid" :width="canvasDimensions.x" :height="canvasDimensions.y" @mousedown.left="onMouseDown($event)"
+		    @mousemove="onMouseMove($event)" @mouseup.left="onMouseUp($event)" @mouseleave="onMouseUp($event)" :style="dimensionsToStyle">
 			<!-- Blocks clicking/dragging the grid -->
 			<div id="image-blocker" style="width:100%;height:100%;z-index:2;position:absolute;"></div>
 			<!-- Grid -->
@@ -16,14 +18,16 @@
 						<path :d="largeGridPath" fill="none" stroke="gray" stroke-width="2" />
 					</pattern>
 				</defs>
-				<rect width="100%" height="100%" fill="url(#grid)" stroke="rgb(0,0,0)" stroke-width="4" />
+				<rect width="100%" height="100%" :fill="isGridActive" stroke="rgb(0,0,0)" stroke-width="4" />
 			</svg>
 		</div>
 	</div>
 </template>
 
 <script>
-import {eventBus} from "./eventBus.js";
+	import {
+		eventBus
+	} from "./eventBus.js";
 
 	export default {
 		data() {
@@ -43,7 +47,7 @@ import {eventBus} from "./eventBus.js";
 					y: 16
 				},
 				dataURI: null,
-				canvasDimensions:{
+				canvasDimensions: {
 					x: 500,
 					y: 500
 				}
@@ -67,8 +71,11 @@ import {eventBus} from "./eventBus.js";
 			smallGridPath: function () {
 				return `M ${this.gridSize.x} 0 L 0 0 0 ${this.gridSize.y}`;
 			},
-			largeGridPath: function(){
+			largeGridPath: function () {
 				return `M ${this.gridSize.x*10} 0 L 0 0 0 ${this.gridSize.y*10}`
+			},
+			isGridActive: function () {
+				return this.$store.state.settings.gridActive ? 'url(#grid)' : 'none';
 			}
 		},
 		methods: {
@@ -139,21 +146,21 @@ import {eventBus} from "./eventBus.js";
 				this.updateImage();
 				this.createNewDimensions(this.tempCanvasDimensions);
 			},
-			createNewDimensions(newDimensions){
+			createNewDimensions(newDimensions) {
 				// There's probably a simpler way to do this but it's late and at least it works so ¯\_(ツ)_/¯
-					// Get scales first
-					let scaleX = this.$store.state.settings.imageDimensions.x/this.$store.state.settings.imageDimensions.y;
-					let scaleY = this.$store.state.settings.imageDimensions.y/this.$store.state.settings.imageDimensions.x;
-					let biggest;
-					if(scaleX !== 1){
-						biggest = scaleX > 1 ? "x" : "y";
-					}
-					this.canvasDimensions.x = biggest && biggest === "x" ? newDimensions.x*scaleX : newDimensions.x;
-					this.canvasDimensions.y = biggest && biggest === "y" ? newDimensions.y*scaleY : newDimensions.y;
+				// Get scales first
+				let scaleX = this.$store.state.settings.imageDimensions.x / this.$store.state.settings.imageDimensions.y;
+				let scaleY = this.$store.state.settings.imageDimensions.y / this.$store.state.settings.imageDimensions.x;
+				let biggest;
+				if (scaleX !== 1) {
+					biggest = scaleX > 1 ? "x" : "y";
+				}
+				this.canvasDimensions.x = biggest && biggest === "x" ? newDimensions.x * scaleX : newDimensions.x;
+				this.canvasDimensions.y = biggest && biggest === "y" ? newDimensions.y * scaleY : newDimensions.y;
 
-					// Update the gridsize as well
-					this.gridSize.x = this.canvasDimensions.x / this.$store.state.settings.imageDimensions.x;
-					this.gridSize.y = this.canvasDimensions.y / this.$store.state.settings.imageDimensions.y;
+				// Update the gridsize as well
+				this.gridSize.x = this.canvasDimensions.x / this.$store.state.settings.imageDimensions.x;
+				this.gridSize.y = this.canvasDimensions.y / this.$store.state.settings.imageDimensions.y;
 			}
 		},
 		mounted() {
@@ -166,14 +173,14 @@ import {eventBus} from "./eventBus.js";
 			this.ctx.msImageSmoothingEnabled = false;
 			this.ctx.imageSmoothingEnabled = false;
 			this.newCanvas();
-			eventBus.$on("createNewImage",this.newCanvas);
+			eventBus.$on("createNewImage", this.newCanvas);
 		},
 		watch: {
-			tempCanvasDimensions:{
-				handler: function(newDimensions, oldDimensions){
+			tempCanvasDimensions: {
+				handler: function (newDimensions, oldDimensions) {
 					this.createNewDimensions(newDimensions);
 				},
-				deep:true
+				deep: true
 			}
 		}
 	};
@@ -181,25 +188,26 @@ import {eventBus} from "./eventBus.js";
 </script>
 
 <style lang='scss'>
-@import '~vars';
-#canvas {
-	// width: 500px;
-	// height: 500px;
-	margin: 0 auto; // border: 2px solid red;
-	image-rendering: optimizeSpeed;
-	image-rendering: -moz-crisp-edges;
-	image-rendering: -webkit-optimize-contrast;
-	image-rendering: -o-crisp-edges;
-	image-rendering: pixelated;
-	-ms-interpolation-mode: nearest-neighbor;
-}
+	@import '~vars';
+	#canvas {
+		// width: 500px;
+		// height: 500px;
+		margin: 0 auto; // border: 2px solid red;
+		image-rendering: optimizeSpeed;
+		image-rendering: -moz-crisp-edges;
+		image-rendering: -webkit-optimize-contrast;
+		image-rendering: -o-crisp-edges;
+		image-rendering: pixelated;
+		-ms-interpolation-mode: nearest-neighbor;
+	}
 
-#canvas-grid {
-	// border: 3px solid hotpink;
-	// box-sizing: content-box;
-	position: absolute;
-	top: 0;
-	left: 0;
-	z-index: 2; // border: 2px solid black;
-}
+	#canvas-grid {
+		// border: 3px solid hotpink;
+		// box-sizing: content-box;
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 2; // border: 2px solid black;
+	}
+
 </style>

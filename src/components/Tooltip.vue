@@ -64,7 +64,7 @@
 			border-left: 5px solid transparent;
 			border-right: 5px solid transparent;
 
-			border-top: 5px solid $background--dark-alt;
+			border-top: 5px solid $background--dark-pressed;
 		}
 	}
 

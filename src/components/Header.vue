@@ -15,7 +15,7 @@
 					<i class="cogs icon"></i>Settings</p>
 				<ul class="dropdown-items">
 					<li @click="toggleGrid" tabindex="0" class="dropdown-item">Grid:
-						<i class="icon check"></i>
+						<i v-if="this.$store.state.settings.gridActive" class="icon check"></i>
 					</li>
 				</ul>
 			</div>
@@ -43,7 +43,8 @@
 		},
 		methods: {
 			toggleGrid() {
-				let tempSettings = this.$store.state.seetings;
+				let tempSettings = { ...this.$store.state.settings
+				};
 				tempSettings.gridActive = !tempSettings.gridActive;
 				this.$store.dispatch("setSettings", tempSettings);
 			},
@@ -51,7 +52,7 @@
 				this.modalComponent = content;
 				this.$refs["modal"].openModal();
 			},
-			closeModal(){
+			closeModal() {
 				this.$refs["modal"].closeModal();
 			}
 		}
