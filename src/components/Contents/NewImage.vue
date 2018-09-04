@@ -4,7 +4,7 @@
 			<div class="form-group half-width">
 				<div class="input-group">
 					<label for="export-x">
-						<strong> X:</strong>
+						X:
 					</label>
 					<input type="number" name="export-x" v-model="xSize">
 				</div>
@@ -15,7 +15,7 @@
 				</div>
 				<div class="input-group">
 					<label for="export-y">
-						<strong>Y:</strong>
+						Y:
 					</label>
 					<input type="number" name="export-y" v-model="ySize">
 				</div>
@@ -23,7 +23,7 @@
 			<div class="form-group half-width">
 				<div class="input-group">
 					<label for="preset">
-						<strong>Preset: </strong>
+						Preset:
 					</label>
 					<select name="preset" v-model="preset">
 						<option>8x8</option>

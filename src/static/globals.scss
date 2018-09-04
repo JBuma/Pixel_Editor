@@ -42,3 +42,21 @@ $text--large:20px;
 */
 
 $tooltip-width:120px;
+/*
+===================================
+	Header
+===================================
+*/
+
+$header-item--width:120px;
+$dropdown-item--width: $header-item--width * 1.2;
+
+/*
+===================================
+	Sidebar
+===================================
+*/
+
+$sidebar--width: 20vw;
+$sidebar--min-width:200px;
+$sidebar--max-width:400px;

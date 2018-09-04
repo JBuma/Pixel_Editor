@@ -28,10 +28,14 @@
 	import {
 		eventBus
 	} from "./eventBus.js";
+	import {
+		mapGetters
+	} from 'vuex';
 
 	export default {
 		data() {
 			return {
+				unwatch: null,
 				imageCanvas: null,
 				ctx: null,
 				imageDimensions: {
@@ -76,7 +80,7 @@
 			},
 			isGridActive: function () {
 				return this.$store.state.settings.gridActive ? 'url(#grid)' : 'none';
-			}
+			},
 		},
 		methods: {
 			updateImage() {
@@ -89,7 +93,6 @@
 			},
 			onMouseDown(e) {
 				// e.stopPropagation();
-
 				if (this.$store.state.currentTool.onMouseDown) {
 					let pos = this.getPosition(e.layerX, e.layerY);
 					this.$store.state.currentTool.onMouseDown(pos);
@@ -181,7 +184,8 @@
 					this.createNewDimensions(newDimensions);
 				},
 				deep: true
-			}
+			},
+
 		}
 	};
 

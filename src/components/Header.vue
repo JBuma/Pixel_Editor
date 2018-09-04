@@ -23,7 +23,11 @@
 				<p>
 					<i class="question icon"></i>Info</p>
 				<ul class="dropdown-items">
-					<li @click="linkTo('https://github.com/JBuma/Pixel_Editor')" tabindex="0" class="dropdown-item">Repo</li>
+					<a href="https://github.com/JBuma/Pixel_Editor" target="_blank">
+						<li tabindex="0" class="dropdown-item external-link">
+							GitHub Repo
+						</li>
+					</a>
 				</ul>
 			</div>
 		</div>
@@ -85,7 +89,7 @@
 		padding: $spacing--medium $spacing--medium;
 		user-select: none;
 		-moz-user-select: -moz-none;
-		min-width: 120px;
+		min-width: $header-item--width;
 
 		&:hover,
 		&:focus {
@@ -113,14 +117,15 @@
 		margin: 0;
 		position: relative;
 		.dropdown-items {
-			display: none;
+
+			display: none; // min-width: $dropdown-item--width;
 		}
 
 		&:focus,
 		&:hover {
 			.dropdown-items {
-				width: 100%;
-				display: block;
+				min-width: 100%;
+				display: initial;
 				position: absolute;
 				top: 100%;
 				left: 0;
@@ -132,14 +137,21 @@
 				.dropdown-item {
 					padding: $spacing--small;
 					background-color: $background--dark-pressed;
-					width: 100%;
-
+					width: auto;
+					min-width: 100%;
 
 					&:hover {
 						background-color: $background--dark-alt;
 					}
 				}
 			}
+		}
+	}
+
+	.external-link {
+		&:after {
+			font-family: Icons;
+			content: "\f35d";
 		}
 	}
 
