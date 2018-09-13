@@ -1,8 +1,18 @@
 <template>
-	<main @mousedown.middle="beginDragCanvas($event)" @mouseleave="stopDragCanvas($event)" @mouseup.middle="stopDragCanvas($event)"
+	<main 
+    @mousedown.middle="beginDragCanvas($event)"
+    @mouseup.middle="stopDragCanvas($event)"
+    @mousedown.left="onMouseDown($event)"
+		@mousemove="onMouseMove($event)"
+    @mouseup.left="onMouseUp($event)" 
+    @mouseleave="onMouseLeave($event)"
 	    id="paint-area">
 		<div id="canvas-cover" style="width:100%;height:100%;"></div>
-		<pixel-canvas @mousedown.middle="beginDragCanvas($event)" @mouseleave="stopDragCanvas($event)" @mouseup="stopDragCanvas($event)"
+		<pixel-canvas
+      ref="pixel-canvas"
+      @mousedown.middle="beginDragCanvas($event)"  
+      @mouseup="stopDragCanvas($event)"
+      
 		    id='pixel-canvas' :temp-canvas-dimensions="canvasDimensions" :style="transformStyle"></pixel-canvas>
 	</main>
 </template>
@@ -38,6 +48,61 @@ export default {
     }
   },
   methods: {
+    onMouseDown(e) {
+      console.log(e);
+      if (this.$store.state.currentTool.name === "Move") {
+        this.beginDragCanvas(e);
+      } else if (
+        this.$store.state.currentTool.onMouseDown &&
+        e.target.id !== "canvas-cover"
+      ) {
+        let pos = this.getPosition(e.layerX, e.layerY);
+        this.$store.state.currentTool.onMouseDown(pos);
+        this.$refs["pixel-canvas"].updateImage();
+      }
+    },
+    onMouseMove(e) {
+      if (this.$store.state.currentTool.name === "Move") {
+        this.dragCanvas(e);
+      } else if (
+        this.$store.state.currentTool.onMouseMove &&
+        e.target.id !== "canvas-cover"
+      ) {
+        let pos = this.getPosition(e.layerX, e.layerY);
+        this.$store.state.currentTool.onMouseMove(pos);
+      }
+      this.$refs["pixel-canvas"].updateImage();
+    },
+    onMouseUp(e) {
+      if (this.$store.state.currentTool.name === "Move") {
+        this.stopDragCanvas(e);
+      } else if (this.$store.state.currentTool.onMouseUp) {
+        let pos = this.getPosition(e.layerX, e.layerY);
+        this.$store.state.currentTool.onMouseUp(e, pos);
+      }
+      this.$refs["pixel-canvas"].updateImage();
+    },
+    getPosition(x, y) {
+      let pos = {
+        gridX: 0,
+        gridY: 0,
+        bufferPos: 0
+      };
+      pos.gridX = Math.floor(
+        x /
+          (this.canvasDimensions.x /
+            this.$store.state.settings.imageDimensions.x)
+      );
+      pos.gridY = Math.floor(
+        y /
+          (this.canvasDimensions.y /
+            this.$store.state.settings.imageDimensions.y)
+      );
+      pos.bufferPos =
+        (pos.gridY * this.$store.state.settings.imageDimensions.x + pos.gridX) *
+        4;
+      return pos;
+    },
     handleScroll(e) {
       //TODO: scale zoom speed depending on size
       this.canvasDimensions.x -=
@@ -65,6 +130,9 @@ export default {
     stopDragCanvas(e) {
       this.isDragging = false;
       // console.log(e);
+    },
+    onMouseLeave(e) {
+      this.stopDragCanvas();
     }
   },
   mounted() {
@@ -117,5 +185,14 @@ export default {
 #pixel-canvas {
   position: absolute; // transform: translate(0px, 0px);
   transform-origin: center center;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+
+  & * {
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+  }
 }
 </style>

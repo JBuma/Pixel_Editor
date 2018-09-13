@@ -1,6 +1,6 @@
 <template>
 	<nav id="header">
-		<div class="logo-area item">LOGO</div>
+		<div class="logo-area item">Pixelazer</div>
 		<div class="menu-items">
 			<div tabindex="0" class="item dropdown">
 				<p>
@@ -38,121 +38,119 @@
 </template>
 
 <script>
-	import modal from "./Modal.vue";
-	import ExportImage from "./Contents/Export.vue";
-	import NewImage from "./Contents/NewImage.vue";
-	export default {
-		components: {
-			modal,
-			ExportImage,
-			NewImage
-		},
-		data() {
-			return {
-				modalComponent: "ExportImage"
-			}
-		},
-		methods: {
-			toggleGrid() {
-				let tempSettings = { ...this.$store.state.settings
-				};
-				tempSettings.gridActive = !tempSettings.gridActive;
-				this.$store.dispatch("setSettings", tempSettings);
-			},
-			openModal(content) {
-				this.modalComponent = content;
-				this.$refs["modal"].openModal();
-			},
-			closeModal() {
-				this.$refs["modal"].closeModal();
-			},
-			linkTo(link) {
-				window.open(link);
-			}
-		}
-	};
-
+import modal from "./Modal.vue";
+import ExportImage from "./Contents/Export.vue";
+import NewImage from "./Contents/NewImage.vue";
+export default {
+  components: {
+    modal,
+    ExportImage,
+    NewImage
+  },
+  data() {
+    return {
+      modalComponent: "ExportImage"
+    };
+  },
+  methods: {
+    toggleGrid() {
+      let tempSettings = {
+        ...this.$store.state.settings
+      };
+      tempSettings.gridActive = !tempSettings.gridActive;
+      this.$store.dispatch("setSettings", tempSettings);
+    },
+    openModal(content) {
+      this.modalComponent = content;
+      this.$refs["modal"].openModal();
+    },
+    closeModal() {
+      this.$refs["modal"].closeModal();
+    },
+    linkTo(link) {
+      window.open(link);
+    }
+  }
+};
 </script>
 
 <style lang="scss">
-	@import "~vars";
-	#header {
-		width: 100%;
-		max-height: 150px;
-		background-color: $background--dark;
-		color: $text--dark;
-		display: flex;
-		flex-flow: row nowrap;
-	}
+@import "~vars";
+#header {
+  width: 100%;
+  max-height: 150px;
+  background-color: $background--dark;
+  color: $text--dark;
+  display: flex;
+  flex-flow: row nowrap;
+}
 
-	.item {
-		padding: $spacing--medium $spacing--medium;
-		user-select: none;
-		-moz-user-select: -moz-none;
-		min-width: $header-item--width;
+.item {
+  padding: $spacing--medium $spacing--medium;
+  user-select: none;
+  -moz-user-select: -moz-none;
+  min-width: $header-item--width;
 
-		&:hover,
-		&:focus {
-			background-color: $background--dark-alt;
-			cursor: pointer;
-		}
-	}
+  &:hover,
+  &:focus {
+    background-color: $background--dark-alt;
+    cursor: pointer;
+  }
+}
 
-	.logo-area {
-		padding: $spacing--medium $spacing--huge;
-	}
+.logo-area {
+  padding: $spacing--medium $spacing--huge;
+}
 
-	.menu-items {
-		margin: 0;
-		padding: 0;
-		list-style: none;
-		display: flex;
-		flex-flow: row nowrap;
-		p {
-			margin: 0;
-		}
-	}
+.menu-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-flow: row nowrap;
+  p {
+    margin: 0;
+  }
+}
 
-	.dropdown {
-		margin: 0;
-		position: relative;
-		.dropdown-items {
+.dropdown {
+  margin: 0;
+  position: relative;
+  .dropdown-items {
+    display: none; // min-width: $dropdown-item--width;
+  }
 
-			display: none; // min-width: $dropdown-item--width;
-		}
+  &:focus,
+  &:hover {
+    .dropdown-items {
+      min-width: 100%;
+      display: initial;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: $background--dark;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      z-index: 10;
+      .dropdown-item {
+        padding: $spacing--small;
+        background-color: $background--dark-pressed;
+        width: auto;
+        min-width: 100%;
 
-		&:focus,
-		&:hover {
-			.dropdown-items {
-				min-width: 100%;
-				display: initial;
-				position: absolute;
-				top: 100%;
-				left: 0;
-				background-color: $background--dark;
-				padding: 0;
-				margin: 0;
-				list-style: none;
-				z-index: 10;
-				.dropdown-item {
-					padding: $spacing--small;
-					background-color: $background--dark-pressed;
-					width: auto;
-					min-width: 100%;
+        &:hover {
+          background-color: $background--dark-alt;
+        }
+      }
+    }
+  }
+}
 
-					&:hover {
-						background-color: $background--dark-alt;
-					}
-				}
-			}
-		}
-	}
-
-	.external-link {
-		&:after {
-			font-family: Icons;
-			content: "\f35d";
-		}
-	}
-
+.external-link {
+  &:after {
+    font-family: Icons;
+    content: "\f35d";
+  }
+}
 </style>
